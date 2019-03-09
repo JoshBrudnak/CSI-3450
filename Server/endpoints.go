@@ -18,6 +18,9 @@ const (
 	RemoveCategory     = "delete from budget_category where id = $1;"
 	RemoveOldSessions = "delete from session where age(now(), time) > '5 hour';"
 
+	SelectUserData        = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
+	SelectUserCatagories        = "select id, category_name, b_value from budger_category where user_id = $1 order by category_name;"
+
 	SelectUserAuth        = "select id, password from budget_user where email = $1;"
 	SelectSession         = "select count(userId) from session where sessionkey = $1;"
 	SelectAuthId          = "select userId from session where sessionKey = $1;"
@@ -35,6 +38,25 @@ type NewUser struct {
 	Repassword string
 	Email      string
 	TotalMoney      string
+}
+
+type Category struct {
+  Name string
+  BValue string
+}
+
+type Profile struct {
+	FirstName       string
+	LastName       string
+	Admin      bool
+	Email      string
+	Date      bool
+	TotalMoney      string
+	CategoryList []Category
+}
+
+func (p *Profile) SetCategoryList(c []Category) {
+	p.CategoryList = c
 }
 
 func query(sql string) {
@@ -84,7 +106,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	decoder := json.NewDecoder(r.Body)
-	decoder.Decode(&auth)
+	err := decoder.Decode(&auth)
+	logIfErr(err)
 	defer r.Body.Close()
 
 	if auth.Username == "" || auth.Password == "" {
@@ -117,6 +140,46 @@ func login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Error(w, "Incorrect username or password", 401)
 	}
+}
+
+func profile(w http.ResponseWriter, r *http.Request) {
+	var p Profile
+	var categories []Category
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+		return
+	}
+
+	userId := getUserId(cookie.Value)
+
+	rows, err := db.Query(SelectUserData, userId)
+	checkErr(err)
+
+	rows.Next()
+	err = rows.Scan(&p.FirstName, &p.LastName, &p.Email, &p.Date, &p.Admin, &p.TotalMoney)
+	logIfErr(err)
+	rows.Close()
+
+	categoryRows, viderr := db.Query(SelectUserCatagories, userId)
+	logIfErr(viderr)
+
+	for categoryRows.Next() {
+		var c Category
+		err = categoryRows.Scan(&c.Name, &c.BValue)
+		logIfErr(err)
+
+	    categories = append(categories, c)
+	}
+	categoryRows.Close()
+
+	p.SetCategoryList(categories)
+
+	err = json.NewEncoder(w).Encode(p)
+	logServerErr(w, err)
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
