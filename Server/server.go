@@ -101,7 +101,12 @@ func main() {
 	//http.Handle("/resource/", http.StripPrefix("/resource/", http.FileServer(http.Dir("../react/dueto/src/resources"))))
 	http.HandleFunc("/api/login", login)
 	http.HandleFunc("/api/logout", logout)
-	http.HandleFunc("/api/profile", login)
+	http.HandleFunc("/api/profile", profile)
+	http.HandleFunc("/api/transaction", makeTransaction)
+	http.HandleFunc("/api/category", makeCategory)
+	http.HandleFunc("/api/add/user", createAccount)
+	http.HandleFunc("/api/add/category", makeCategory)
+	http.HandleFunc("/api/remove/user", deleteAccount)
 	//http.HandleFunc("/", home)
 
 	http.ListenAndServe(":8080", nil)

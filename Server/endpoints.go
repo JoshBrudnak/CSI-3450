@@ -11,12 +11,15 @@ import (
 const (
 	AddUser         = "insert into budget_user(fname, lname, password, email, admin, date, t_money) VALUES($1, $2, $3 $4, $5, NOW()::date, $6);"
 	AddBudgetCategory = " insert into budget_category(user_id, category_name, b_value) VALUES($1, $2, $3);"
-	AddBudgetEntry    = "insert into budget_entry(category_id, date, value) VALUES($1, $2, $3);"
+	AddBudgetEntry    = "insert into budget_entry(category_id, date, value) VALUES($1, now()::timestamp, $3);"
 	AddSession        = "insert into Session(userId, sessionKey, time) VALUES($1, $2, now()::timestamp);"
 
 	RemoveSession     = "delete from Session where sessionkey = $1;"
+	RemoveUser     = "delete from budget_user where user_id = $1;"
 	RemoveEntry       = "delete from budget_entry where id = $1;"
+	RemoveAllEntries    = "delete from budget_entry where category_id = (select id from budget_category where user_id = $1)"
 	RemoveCategory    = "delete from budget_category where id = $1;"
+	RemoveAllCategories    = "delete from budget_category where user_id = $1;"
 	RemoveOldSessions = "delete from session where age(now(), time) > '5 hour';"
 
 	SelectUserData       = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
@@ -44,6 +47,11 @@ type NewUser struct {
 type Category struct {
 	Name   string
 	BValue string
+}
+
+type Entry struct {
+	CatagoryId   string
+	Value string
 }
 
 type Profile struct {
@@ -180,6 +188,64 @@ func profile(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(p)
 	logServerErr(w, err)
+}
+
+func makeTransaction(w http.ResponseWriter, r *http.Request) {
+	var data Entry
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+		return
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&data)
+
+	_, err := db.Query(AddBudgetEntry, data.CatagoryId, data.Value)
+	logIfErr(err)
+}
+
+func makeCategory(w http.ResponseWriter, r *http.Request) {
+	var data Category
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+		return
+	}
+
+	userId := getUserId(cookie.Value)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&data)
+
+	_, err := db.Query(AddBudgetCategory, userId, data.Name, data.BValue)
+	logIfErr(err)
+}
+
+func deleteAccount(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+	}
+
+	userId := getUserId(cookie.Value)
+
+	_, err := db.Query(RemoveAllEntries, userId)
+	logIfErr(err)
+	_, err = db.Query(RemoveAllCategories, userId)
+	logIfErr(err)
+	_, err = db.Query(RemoveUser, userId)
+	logIfErr(err)
 }
 
 func createAccount(w http.ResponseWriter, r *http.Request) {
