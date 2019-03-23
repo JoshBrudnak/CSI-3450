@@ -3,27 +3,28 @@ package main
 import (
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/badoux/checkmail"
 	"net/http"
 	"time"
 )
 
 const (
-	AddArtist  = "insert into budget_user(fname, lname, password, email, admin, date, t_money) VALUES($1, $2, $3 $4, $5, NOW()::date, $6);"
+	AddUser         = "insert into budget_user(fname, lname, password, email, admin, date, t_money) VALUES($1, $2, $3 $4, $5, NOW()::date, $6);"
 	AddBudgetCategory = " insert into budget_category(user_id, category_name, b_value) VALUES($1, $2, $3);"
-	AddBudgetEntry = "insert into budget_entry(category_id, date, value) VALUES($1, $2, $3);"
-	AddSession = "insert into Session(userId, sessionKey, time) VALUES($1, $2, now()::timestamp);"
+	AddBudgetEntry    = "insert into budget_entry(category_id, date, value) VALUES($1, $2, $3);"
+	AddSession        = "insert into Session(userId, sessionKey, time) VALUES($1, $2, now()::timestamp);"
 
 	RemoveSession     = "delete from Session where sessionkey = $1;"
-	RemoveEntry     = "delete from budget_entry where id = $1;"
-	RemoveCategory     = "delete from budget_category where id = $1;"
+	RemoveEntry       = "delete from budget_entry where id = $1;"
+	RemoveCategory    = "delete from budget_category where id = $1;"
 	RemoveOldSessions = "delete from session where age(now(), time) > '5 hour';"
 
-	SelectUserData        = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
-	SelectUserCatagories        = "select id, category_name, b_value from budger_category where user_id = $1 order by category_name;"
+	SelectUserData       = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
+	SelectUserCatagories = "select id, category_name, b_value from budger_category where user_id = $1 order by category_name;"
 
-	SelectUserAuth        = "select id, password from budget_user where email = $1;"
-	SelectSession         = "select count(userId) from session where sessionkey = $1;"
-	SelectAuthId          = "select userId from session where sessionKey = $1;"
+	SelectUserAuth = "select id, password from budget_user where email = $1;"
+	SelectSession  = "select count(userId) from session where sessionkey = $1;"
+	SelectAuthId   = "select userId from session where sessionKey = $1;"
 )
 
 type Authentication struct {
@@ -32,33 +33,32 @@ type Authentication struct {
 }
 
 type NewUser struct {
-	FirstName       string
-	lastName       string
+	FirstName  string
+	LastName   string
 	Password   string
 	Repassword string
 	Email      string
-	TotalMoney      string
+	TotalMoney string
 }
 
 type Category struct {
-  Name string
-  BValue string
+	Name   string
+	BValue string
 }
 
 type Profile struct {
-	FirstName       string
-	LastName       string
-	Admin      bool
-	Email      string
-	Date      bool
-	TotalMoney      string
+	FirstName    string
+	LastName     string
+	Admin        bool
+	Email        string
+	Date         bool
+	TotalMoney   string
 	CategoryList []Category
 }
 
 func (p *Profile) SetCategoryList(c []Category) {
 	p.CategoryList = c
 }
-
 func query(sql string) {
 	_, err := db.Query(sql)
 	logIfErr(err)
@@ -119,7 +119,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	rows.Close()
 
 	rows, err = db.Query(SelectUserAuth, auth.Username)
-	logIfErr(err)
+    logIfErr(err)
 
 	rows.Next()
 	err = rows.Scan(&id, &hashPassword)
@@ -172,7 +172,7 @@ func profile(w http.ResponseWriter, r *http.Request) {
 		err = categoryRows.Scan(&c.Name, &c.BValue)
 		logIfErr(err)
 
-	    categories = append(categories, c)
+		categories = append(categories, c)
 	}
 	categoryRows.Close()
 
@@ -180,6 +180,45 @@ func profile(w http.ResponseWriter, r *http.Request) {
 
 	err = json.NewEncoder(w).Encode(p)
 	logServerErr(w, err)
+}
+
+func createAccount(w http.ResponseWriter, r *http.Request) {
+    var id string
+	var hashPassword string
+	var data NewUser
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&data)
+
+	if data.Password != data.Repassword {
+		http.Error(w, "Passwords do not match", http.StatusNotAcceptable)
+		return
+	}
+
+	err := checkmail.ValidateFormat(data.Email)
+	if err != nil {
+		http.Error(w, "Enter a valid email", http.StatusNotAcceptable)
+        return
+	}
+
+	bHash, err := bcrypt.GenerateFromPassword([]byte(data.Password), 1)
+	hash := string(bHash)
+
+	rows, err := db.Query(AddUser, data.FirstName, data.LastName, hash, data.Email, data.TotalMoney)
+	logIfErr(err)
+	rows.Close()
+
+	authRows, err := db.Query(SelectUserAuth, data.Email)
+	logServerErr(w, err)
+
+	if authRows.Next() {
+		err = authRows.Scan(&id, &hashPassword)
+		logIfErr(err)
+	} else {
+		http.Error(w, "Unable to create user", http.StatusForbidden)
+	}
+	authRows.Close()
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
