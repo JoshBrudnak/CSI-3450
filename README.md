@@ -11,3 +11,7 @@ Budget Planner is a simple budgeting application that allows users to create, co
 3. Install necessary go packages using the [setupServer.sh](./Server/setupServer.sh).
 4. Setup the test data `go run ./testdata/setupTestData.go`.
 5. Startup the server `go run server.go endpoints.go`.
+
+# API
+
+For the API documentation see the [API endpoints](./API-endpoints.md) doc.

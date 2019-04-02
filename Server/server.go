@@ -103,10 +103,11 @@ func main() {
 	http.HandleFunc("/api/logout", logout)
 	http.HandleFunc("/api/profile", profile)
 	http.HandleFunc("/api/dashboard", dashboard)
-	http.HandleFunc("/api/transaction", makeTransaction)
-	http.HandleFunc("/api/category", makeCategory)
+	http.HandleFunc("/api/add/transaction", makeTransaction)
 	http.HandleFunc("/api/add/user", createAccount)
 	http.HandleFunc("/api/add/category", makeCategory)
+	http.HandleFunc("/api/update/user", updateAccount)
+	http.HandleFunc("/api/update/password", updatePassword)
 	http.HandleFunc("/api/remove/user", deleteAccount)
 	//http.HandleFunc("/", home)
 

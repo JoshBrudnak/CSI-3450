@@ -2,28 +2,31 @@ package main
 
 import (
 	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
 	"github.com/badoux/checkmail"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"time"
 )
 
 const (
-	AddUser         = "insert into budget_user(fname, lname, password, email, admin, date, t_money) VALUES($1, $2, $3 $4, $5, NOW()::date, $6);"
+	AddUser           = "insert into budget_user(fname, lname, password, email, admin, date, t_money) VALUES($1, $2, $3 $4, $5, NOW()::date, $6);"
 	AddBudgetCategory = " insert into budget_category(user_id, category_name, b_value) VALUES($1, $2, $3);"
 	AddBudgetEntry    = "insert into budget_entry(category_id, date, value) VALUES($1, now()::timestamp, $3);"
 	AddSession        = "insert into Session(userId, sessionKey, time) VALUES($1, $2, now()::timestamp);"
 
-	RemoveSession     = "delete from Session where sessionkey = $1;"
-	RemoveUser     = "delete from budget_user where user_id = $1;"
-	RemoveEntry       = "delete from budget_entry where id = $1;"
+	UpdateUser     = " update budget_user set fname = $2, lname = $3, email = $4, t_money = $5 where id = $1;"
+	UpdatePassword = " update budget_user set password = $2 where id = $1;"
+
+	RemoveSession       = "delete from Session where sessionkey = $1;"
+	RemoveUser          = "delete from budget_user where user_id = $1;"
+	RemoveEntry         = "delete from budget_entry where id = $1;"
 	RemoveAllEntries    = "delete from budget_entry where category_id = (select id from budget_category where user_id = $1)"
-	RemoveCategory    = "delete from budget_category where id = $1;"
-	RemoveAllCategories    = "delete from budget_category where user_id = $1;"
-	RemoveOldSessions = "delete from session where age(now(), time) > '5 hour';"
+	RemoveCategory      = "delete from budget_category where id = $1;"
+	RemoveAllCategories = "delete from budget_category where user_id = $1;"
+	RemoveOldSessions   = "delete from session where age(now(), time) > '5 hour';"
 
 	SelectUserData       = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
-	SelectDashboardData       = "select category_name, budget_entry.date, budget_entry.value from budget_entry, budget_category where category_id = budget_category.id and budget_category.user_id = $1;"
+	SelectDashboardData  = "select category_name, budget_entry.date, budget_entry.value from budget_entry, budget_category where category_id = budget_category.id and budget_category.user_id = $1;"
 	SelectUserCatagories = "select id, category_name, b_value from budger_category where user_id = $1 order by category_name;"
 
 	SelectUserAuth = "select id, password from budget_user where email = $1;"
@@ -51,14 +54,14 @@ type Category struct {
 }
 
 type CategoryEntry struct {
-	CategoryName   string
-	Date string
-	Value string
+	CategoryName string
+	Date         string
+	Value        string
 }
 
 type Entry struct {
-	CatagoryId   string
-	Value string
+	CatagoryId string
+	Value      string
 }
 
 type Profile struct {
@@ -135,7 +138,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	rows.Close()
 
 	rows, err = db.Query(SelectUserAuth, auth.Username)
-    logIfErr(err)
+	logIfErr(err)
 
 	rows.Next()
 	err = rows.Scan(&id, &hashPassword)
@@ -286,7 +289,7 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func createAccount(w http.ResponseWriter, r *http.Request) {
-    var id string
+	var id string
 	var hashPassword string
 	var data NewUser
 
@@ -302,7 +305,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	err := checkmail.ValidateFormat(data.Email)
 	if err != nil {
 		http.Error(w, "Enter a valid email", http.StatusNotAcceptable)
-        return
+		return
 	}
 
 	bHash, err := bcrypt.GenerateFromPassword([]byte(data.Password), 1)
@@ -322,6 +325,70 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to create user", http.StatusForbidden)
 	}
 	authRows.Close()
+}
+
+func updateAccount(w http.ResponseWriter, r *http.Request) {
+	var id string
+	var hashPassword string
+	var data NewUser
+
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+	}
+
+	userId := getUserId(cookie.Value)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&data)
+
+	err := checkmail.ValidateFormat(data.Email)
+	if err != nil {
+		http.Error(w, "Enter a valid email", http.StatusNotAcceptable)
+		return
+	}
+
+	rows, err := db.Query(UpdateUser, userId, data.FirstName, data.LastName, data.Email, data.TotalMoney)
+	logIfErr(err)
+	rows.Close()
+}
+
+func updatePassword(w http.ResponseWriter, r *http.Request) {
+	var id string
+	var hashPassword string
+	var data NewUser
+
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+	}
+
+	userId := getUserId(cookie.Value)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&data)
+
+	if data.Password != data.Repassword {
+		http.Error(w, "Passwords do not match", http.StatusNotAcceptable)
+		return
+	}
+
+	err := checkmail.ValidateFormat(data.Email)
+	if err != nil {
+		http.Error(w, "Enter a valid email", http.StatusNotAcceptable)
+		return
+	}
+
+	bHash, err := bcrypt.GenerateFromPassword([]byte(data.Password), 1)
+	hash := string(bHash)
+
+	rows, err := db.Query(UpdatePassword, userId, hash)
+	logIfErr(err)
+	rows.Close()
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
