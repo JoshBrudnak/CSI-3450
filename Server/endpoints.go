@@ -23,6 +23,7 @@ const (
 	RemoveOldSessions = "delete from session where age(now(), time) > '5 hour';"
 
 	SelectUserData       = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
+	SelectDashboardData       = "select category_name, budget_entry.date, budget_entry.value from budget_entry, budget_category where category_id = budget_category.id and budget_category.user_id = $1;"
 	SelectUserCatagories = "select id, category_name, b_value from budger_category where user_id = $1 order by category_name;"
 
 	SelectUserAuth = "select id, password from budget_user where email = $1;"
@@ -49,6 +50,12 @@ type Category struct {
 	BValue string
 }
 
+type CategoryEntry struct {
+	CategoryName   string
+	Date string
+	Value string
+}
+
 type Entry struct {
 	CatagoryId   string
 	Value string
@@ -67,6 +74,7 @@ type Profile struct {
 func (p *Profile) SetCategoryList(c []Category) {
 	p.CategoryList = c
 }
+
 func query(sql string) {
 	_, err := db.Query(sql)
 	logIfErr(err)
@@ -187,6 +195,35 @@ func profile(w http.ResponseWriter, r *http.Request) {
 	p.SetCategoryList(categories)
 
 	err = json.NewEncoder(w).Encode(p)
+	logServerErr(w, err)
+}
+
+func dashboard(w http.ResponseWriter, r *http.Request) {
+	var dashboard []CategoryEntry
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	cookie, _ := r.Cookie("SESSIONID")
+
+	if !authenticate(cookie) {
+		http.Error(w, "Authentication failed", http.StatusForbidden)
+		return
+	}
+
+	userId := getUserId(cookie.Value)
+
+	rows, err := db.Query(SelectDashboardData, userId)
+	checkErr(err)
+
+	for rows.Next() {
+		var c CategoryEntry
+		err = rows.Scan(&c.CategoryName, &c.Date, &c.Value)
+		logIfErr(err)
+
+		dashboard = append(dashboard, c)
+	}
+	rows.Close()
+
+	err = json.NewEncoder(w).Encode(dashboard)
 	logServerErr(w, err)
 }
 
