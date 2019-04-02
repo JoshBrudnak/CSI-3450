@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Current\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Views\Home\Testing.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Views\Home\Index.js" />
+  </ItemGroup>
+</Project>
