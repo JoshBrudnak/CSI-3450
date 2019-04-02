@@ -32,7 +32,7 @@ Deletes the user’s session
 
 ## Create User
 Creates a new user with the data given
-- Url: `/api/createuser`
+- Url: `/api/add/user`
 - Method: POST
 - Post body:
     ```
@@ -51,6 +51,19 @@ Removes a user along with all of the user's data
 - Url: `/api/remove/user`
 - Method: GET
 - Include session id
+
+## Add Category
+Adds a transaction in a budget category
+- Url: `/api/add/category`
+- Method: POST
+- Include session id
+- Post body:
+    ```
+    Body: {
+        Name: ,
+        BValue:
+    }
+    ```
 
 ## Add Budget Entry
 Adds a transaction in a budget category
