@@ -1,10 +1,10 @@
 ﻿@{
-    ViewData["Title"] = "My Dashboard";
+    ViewData["Title"] = "Create Account";
 }  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">  
 <style>
       .clic {
           border: none;
-          width: 150px;
+          width: 100px;
           border-radius: 20px;
           color: white;
           background-color: deepskyblue;
@@ -12,9 +12,7 @@
     }
 
        .cont {
-          height: 500px;
-          width: 1225px;
-          margin-left: -50px;
+           margin-top:-10px;
 
     }
 
@@ -23,4 +21,34 @@
     }
 
 
-</style>  <div class="cont">     <img class="cont" style="width:1302px;" src="https://assets-blog.fundera.com/assets/wp-content/uploads/2018/04/29170223/variable-expenses-1.jpg" />     <h3 style="margin-top:-480px;margin-left:45px;color:white;">Budget Planner</h3> </div>  <h4 style="text-align:center;">Budget Planner is a simple budgeting application that allows users to create, configure, and monitor budgets over time. Users are also able to update their progress in the various budget categories.</h4>  <button onclick="window.location='CreateAccount'" style="margin-left:485px;" class="clic">Create an Account</button> 
+</style>  <h3>Create Account</h3>
+<h3></h3>
+
+<div>
+    <h5>First Name</h5>
+    <input class="cont" type="text" />
+</div>
+
+<div>
+    <h5>Last Name</h5>
+    <input class="cont" type="text" />
+</div>
+
+<div>
+    <h5>Username</h5>
+    <input class="cont" type="text" />
+</div>
+
+<div>
+    <h5>Email</h5>
+    <input class="cont" type="text" />
+</div>
+
+<div>
+    <h5>Password</h5>
+    <input class="cont" type="text" />
+</div>
+
+<h3></h3>
+
+<button onclick="window.location='../Home/Dashboard'" class="clic">Create</button> 

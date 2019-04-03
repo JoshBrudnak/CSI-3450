@@ -1,1 +1,41 @@
-﻿<h3>Login</h3>
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
+<style>
+    .clic {
+        border: none;
+        width: 100px;
+        border-radius: 20px;
+        color: white;
+        background-color: deepskyblue;
+    }
+
+    .cont {
+        margin-top: -10px;
+    }
+
+    p, h1, h2, h3, h4, h5 {
+        font-family: sans-serif;
+    }
+</style>
+
+<h3>Login</h3>
+<h3></h3>
+
+<div>
+    <h5>Username</h5>
+    <input class="cont" type="text" />
+</div>
+
+<div>
+    <h5>Password</h5>
+    <input class="cont" type="text" />
+</div>
+
+<h3></h3>
+
+<button onclick="window.location='../Home/Dashboard'" class="clic">Login</button>
