@@ -19,5 +19,8 @@
     <Folder Include="Views\CreateAccount\" />
     <Folder Include="Views\Users\" />
     <Folder Include="Views\Spending\" />
+    <Folder Include="Views\Expenses\" />
+    <Folder Include="Views\Settings\" />
+    <Folder Include="Views\Timeline\" />
   </ItemGroup>
 </Project>

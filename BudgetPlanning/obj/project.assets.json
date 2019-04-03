@@ -11555,11 +11555,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/Lily/Projects/BudgetPlanning/BudgetPlanning/BudgetPlanning.csproj",
+      "projectUniqueName": "/Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/BudgetPlanning.csproj",
       "projectName": "BudgetPlanning",
-      "projectPath": "/Users/Lily/Projects/BudgetPlanning/BudgetPlanning/BudgetPlanning.csproj",
+      "projectPath": "/Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/BudgetPlanning.csproj",
       "packagesPath": "/Users/Lily/.nuget/packages/",
-      "outputPath": "/Users/Lily/Projects/BudgetPlanning/BudgetPlanning/obj/",
+      "outputPath": "/Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/obj/",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
