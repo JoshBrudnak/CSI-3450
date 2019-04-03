@@ -328,8 +328,6 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateAccount(w http.ResponseWriter, r *http.Request) {
-	var id string
-	var hashPassword string
 	var data NewUser
 
 	cookie, _ := r.Cookie("SESSIONID")
@@ -356,8 +354,6 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func updatePassword(w http.ResponseWriter, r *http.Request) {
-	var id string
-	var hashPassword string
 	var data NewUser
 
 	cookie, _ := r.Cookie("SESSIONID")
