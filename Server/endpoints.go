@@ -26,6 +26,7 @@ const (
 	RemoveOldSessions   = "delete from session where age(now(), time) > '5 hour';"
 
 	SelectUserData       = "select fname, lname, email, admin, date, t_money from budget_user where id = $1;"
+	SelectAdminData      = "select fname, lname, email, admin, date from budget_user;"
 	SelectDashboardData  = "select category_name, budget_entry.date, budget_entry.value from budget_entry, budget_category where category_id = budget_category.id and budget_category.user_id = $1;"
 	SelectUserCatagories = "select id, category_name, b_value from budger_category where user_id = $1 order by category_name;"
 
@@ -48,6 +49,13 @@ type NewUser struct {
 	TotalMoney string
 }
 
+type UserData struct {
+	FirstName string
+	LastName  string
+	Email     string
+	Date      string
+}
+
 type Category struct {
 	Name   string
 	BValue string
@@ -68,6 +76,7 @@ type Profile struct {
 	FirstName    string
 	LastName     string
 	Admin        bool
+	AdminData    []UserData
 	Email        string
 	Date         bool
 	TotalMoney   string
@@ -76,6 +85,10 @@ type Profile struct {
 
 func (p *Profile) SetCategoryList(c []Category) {
 	p.CategoryList = c
+}
+
+func (p *Profile) SetAdminData(c []UserData) {
+	p.AdminData = c
 }
 
 func query(sql string) {
@@ -183,8 +196,8 @@ func profile(w http.ResponseWriter, r *http.Request) {
 	logIfErr(err)
 	rows.Close()
 
-	categoryRows, viderr := db.Query(SelectUserCatagories, userId)
-	logIfErr(viderr)
+	categoryRows, err := db.Query(SelectUserCatagories, userId)
+	logIfErr(err)
 
 	for categoryRows.Next() {
 		var c Category
@@ -194,6 +207,22 @@ func profile(w http.ResponseWriter, r *http.Request) {
 		categories = append(categories, c)
 	}
 	categoryRows.Close()
+
+	if p.Admin {
+		adminRows, err := db.Query(SelectUserCatagories, userId)
+		logIfErr(err)
+
+		var adminD []UserData
+		for adminRows.Next() {
+			var c UserData
+			err = adminRows.Scan(&p.FirstName, &p.LastName, &p.Email, &p.Date, &p.Admin)
+			logIfErr(err)
+
+			adminD = append(adminD, c)
+		}
+		adminRows.Close()
+		p.SetAdminData(adminD)
+	}
 
 	p.SetCategoryList(categories)
 
