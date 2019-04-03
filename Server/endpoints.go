@@ -209,7 +209,7 @@ func profile(w http.ResponseWriter, r *http.Request) {
 	categoryRows.Close()
 
 	if p.Admin {
-		adminRows, err := db.Query(SelectUserCatagories, userId)
+		adminRows, err := db.Query(SelectAdminData)
 		logIfErr(err)
 
 		var adminD []UserData
