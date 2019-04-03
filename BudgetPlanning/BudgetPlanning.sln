@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetPlanning", "BudgetPlanning\BudgetPlanning.csproj", "{E77E6AA7-9D67-446F-BB3E-855D3FFE3127}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E77E6AA7-9D67-446F-BB3E-855D3FFE3127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E77E6AA7-9D67-446F-BB3E-855D3FFE3127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E77E6AA7-9D67-446F-BB3E-855D3FFE3127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E77E6AA7-9D67-446F-BB3E-855D3FFE3127}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
