@@ -17,5 +17,7 @@
   <ItemGroup>
     <Folder Include="Views\Login\" />
     <Folder Include="Views\CreateAccount\" />
+    <Folder Include="Views\Users\" />
+    <Folder Include="Views\Spending\" />
   </ItemGroup>
 </Project>

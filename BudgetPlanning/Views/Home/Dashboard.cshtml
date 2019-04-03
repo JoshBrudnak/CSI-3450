@@ -12,6 +12,10 @@
     p, h1, h2, h3, h4, h5 {
         font-family: sans-serif;
     }
+    .a {
+        text-decoration:none;
+        color:cadetblue;
+    }
     .square {
         width: 150px;
         height: 150px;
@@ -126,7 +130,7 @@
                     });
                 </script>
             </div>
-            <button class="square">Log Spendings</button>
+            <button onclick="window.location='../Spending'" class="square">Log Spendings</button>
             <button class="squareB">Fixed Expenses</button>
             <button class="squareD">Timeline</button>
             <button class="squareC">Settings</button>
@@ -138,10 +142,12 @@
             <div class="cont" style="height:150px;width:310px;margin-top:10px;">
                 <div style="padding-left:15px;">
                     <h4>Other Links</h4>
-                    <div style="color:cadetblue">
-                        <p>Users</p>
-                        <p>Abp Users</p>
-                        <p>Report Feedback</p>
+                    <div>
+                        <a href="../Users">Users</a>
+                        <br />
+                        <a href="../Users">Master Users</a>
+                        <br />
+                        <a href="../Users">Report Feedback</a>
                     </div>
                 </div>
             </div>

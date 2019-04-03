@@ -68,3 +68,5 @@
 /Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/obj/Debug/netcoreapp2.1/BudgetPlanning.dll
 /Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/obj/Debug/netcoreapp2.1/BudgetPlanning.pdb
 /Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/obj/Debug/netcoreapp2.1/BudgetPlanning.csproj.CopyComplete
+/Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/obj/Debug/netcoreapp2.1/Razor/Views/Users/Index.g.cshtml.cs
+/Users/Lily/Projects/LS/JoshBrudnak/CSI-3450.git/BudgetPlanning/obj/Debug/netcoreapp2.1/Razor/Views/Spending/Index.g.cshtml.cs
