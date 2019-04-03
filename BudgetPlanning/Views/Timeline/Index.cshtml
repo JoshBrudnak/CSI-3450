@@ -1,1 +1,49 @@
-﻿<h3>Timeline</h3>
+﻿<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<h3>Timeline</h3>
+
+<canvas id="densityChart" width="600" height="400"></canvas>
+<script>
+var densityCanvas = document.getElementById("densityChart");
+
+Chart.defaults.global.defaultFontFamily = "Lato";
+Chart.defaults.global.defaultFontSize = 18;
+
+var densityData = {
+  label: 'Transportation',
+  data: [54.27, 52.43, 55.14, 39.38],
+  backgroundColor: 'rgba(0, 99, 132, 0.6)',
+  borderWidth: 0,
+  yAxisID: "y-axis-density"
+};
+
+var gravityData = {
+  label: 'Food',
+  data: [24.44, 23.30, 65.00, 33.33],
+  backgroundColor: 'rgba(99, 132, 0, 0.6)',
+  borderWidth: 0
+};
+
+var planetData = {
+  labels: ["January", "Februrary", "March", "April"],
+  datasets: [densityData, gravityData]
+};
+
+var chartOptions = {
+  scales: {
+    xAxes: [{
+      barPercentage: 1,
+      categoryPercentage: 0.6
+    }],
+    yAxes: [{
+      id: "y-axis-density"
+    }]
+  }
+};
+
+var barChart = new Chart(densityCanvas, {
+  type: 'bar',
+  data: planetData,
+  options: chartOptions
+});
+</script>
