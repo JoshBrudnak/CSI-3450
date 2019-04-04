@@ -40,8 +40,6 @@
 
 <button onclick="login()" class="clic">Login</button>
 
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
 <script>function login() {
         const Username = document.getElementById("Username").value;
         const Password = document.getElementById("Password").value;
@@ -54,8 +52,10 @@
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
         xhr.onload = function() {
-            (xhr.responseText ? document.cookie = `SESSIONID=${xhr.responseText}` : return);
-
+            if (xhr.responseText) {
+                document.cookie = `SESSIONID=${xhr.responseText}`
+                window.location.href = 'Home/Dashboard';
+            }
         }
 
         xhr.send(JSON.stringify({Username, Password}));

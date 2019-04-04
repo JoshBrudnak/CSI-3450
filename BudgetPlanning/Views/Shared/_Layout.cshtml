@@ -33,7 +33,7 @@
                         <li><a asp-area="" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
                         <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                         <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                        <li><a style="margin-left:650px;" asp-area="" asp-controller="Login" asp-action="Index">Login</a></li>
+                        <li><a style="margin-left:650px;" asp-area="" asp-controller="Login" id="name" asp-action="Index">Login</a></li>
                     </ul>
                 </div>
             </div>
@@ -73,3 +73,11 @@
         @RenderSection("Scripts", required: false)
     </body>
 </html>
+<script>
+    (function() {
+        const test = document.cookie.indexOf("SESSIONID=");
+        if (test != -1) {
+            document.getElementById("name").innerHTML = "William";
+        }
+    })()
+</script>
