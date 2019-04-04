@@ -136,9 +136,12 @@ func login(w http.ResponseWriter, r *http.Request) {
 	var hashPassword string
 	var auth Authentication
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "content-type")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Origin", "*");
+	w.Header().Set("Access-Control-Allow-Credentials", "true");
+	w.Header().Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+	w.Header().Set("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, access-control-allow-origin");
+	w.Header().Set("Content-Type", "application/json")
+
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&auth)
 	logIfErr(err)
@@ -168,6 +171,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		logIfErr(err)
 		rows.Close()
 
+		w.Write([]byte(sessionId))
 		exp := time.Now().Add(5 * time.Hour)
 		cookie := http.Cookie{Name: "SESSIONID", Value: sessionId, Path: "/", Expires: exp, HttpOnly: true}
 		http.SetCookie(w, &cookie)

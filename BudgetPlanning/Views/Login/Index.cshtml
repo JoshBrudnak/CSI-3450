@@ -40,24 +40,24 @@
 
 <button onclick="login()" class="clic">Login</button>
 
-<script>
-    function login() {
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>function login() {
         const Username = document.getElementById("Username").value;
         const Password = document.getElementById("Password").value;
-        console.log(Cookies); 
 
-        fetch('http://localhost:8080/api/login', {
-            method: 'POST',
-            body: { Username, Password },
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => {
-            console.log(res)
-            console.log(document.cookie)
-        })
-        .catch(e => console.error(e));
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'http://localhost:8080/api/login', true);
+        xhr.setRequestHeader('Access-Control-Allow-Headers', '*');
+        xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+        //xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onload = function() {
+            (xhr.responseText ? document.cookie = `SESSIONID=${xhr.responseText}` : return);
+
+        }
+
+        xhr.send(JSON.stringify({Username, Password}));
     }
 </script>
