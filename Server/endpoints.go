@@ -137,6 +137,8 @@ func login(w http.ResponseWriter, r *http.Request) {
 	var auth Authentication
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "content-type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&auth)
 	logIfErr(err)
